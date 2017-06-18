@@ -26,6 +26,7 @@
 #include "nnet3/nnet-simple-component.h"
 #include "nnet3/nnet-parse.h"
 #include "cudamatrix/cu-math.h"
+#include "matrix/compressed-matrix.h"
 
 namespace kaldi {
 namespace nnet3 {
@@ -2492,7 +2493,13 @@ void NaturalGradientAffineComponent::Resize(
 void NaturalGradientAffineComponent::Read(std::istream &is, bool binary) {
   ReadUpdatableCommon(is, binary);  // Read the opening tag and learning rate
   ExpectToken(is, binary, "<LinearParams>");
-  linear_params_.Read(is, binary);
+  CompressedMatrix temp;
+  temp.Read(is, binary);
+  Matrix<BaseFloat> mat(temp.NumRows(), temp.NumCols(), kUndefined);
+  temp.CopyToMat(&mat, kNoTrans);
+  linear_params_.Resize(temp.NumRows(), temp.NumCols());
+  linear_params_.CopyFromMat(mat, kNoTrans);
+  //linear_params_.Read(is, binary);
   ExpectToken(is, binary, "<BiasParams>");
   bias_params_.Read(is, binary);
   ExpectToken(is, binary, "<RankIn>");

@@ -75,6 +75,7 @@ Configuration options:
   --atlas-root=DIR      ATLAS root directory [default=../tools/ATLAS/]
   --openblas-root=DIR   OpenBLAS root directory
   --clapack-root=DIR    CLAPACK root directory
+  --gsl-root=DIR        GSL root directory
   --mkl-root=DIR        MKL root directory
   --mkl-libdir=DIR      MKL library directory
   --mkl-threading=LIB   MKL threading layer [default=sequential]
@@ -909,6 +910,9 @@ do
   --clapack-root=*)
     CLAPACKROOT=`read_dirname $1`;
     shift ;;
+  --gsl-root=*)
+    GSLROOT=`read_dirname $1`;
+    shift ;;
   --openblas-root=*)
     OPENBLASROOT=`read_dirname $1`;
     shift ;;
@@ -1102,6 +1106,42 @@ if $android ; then
   cat makefiles/android_openblas.mk >> kaldi.mk
 
   echo "Successfully configured for Android with OpenBLAS from $OPENBLASROOT."
+
+elif [ "$(basename $CC)" == "emcc" ]; then
+  # emscripten (WebAssembly)
+
+  if [ -z "$CLAPACKROOT" ]; then
+    failure "Must specify the location of CLAPACK with --clapack-root option (and it must exist)"
+  fi
+  if [ ! -f ../tools/CLAPACK/clapack.h ]; then
+    failure "could not find file ../tools/CLAPACK/clapack.h"
+  fi
+  if [ ! -d "$CLAPACKROOT" ]; then
+    failure "The directory $CLAPACKROOT does not exist"
+  fi
+
+  if [ -z "$GSLROOT" ]; then
+    failure "Must specify the location of GSL with --gsl-root option (and it must exist)"
+  fi
+  if [ ! -d "$GSLROOT" ]; then
+    failure "The directory $GSLROOT does not exist"
+  fi
+
+  for lib in F2CLIBS/libf2c.bc lapack_WA.bc libcblaswr.bc; do
+    CLAPACKLIBS="$CLAPACKLIBS $CLAPACKROOT/$lib"
+  done
+  CLAPACKLIBS="$CLAPACKLIBS $GSLROOT/cblas/.libs/libgslcblas.dylib"
+
+  echo "CLAPACKLIBS = $CLAPACKLIBS" >> kaldi.mk
+
+  # Also check for cblas.h and f2c.h
+  echo "Using CLAPACK libs from $CLAPACKROOT as the linear algebra library."
+  if [ ! -f makefiles/wasm_clapack.mk ]; then
+    failure "makefiles/wasm_clapack.mk not found."
+  fi
+  cat makefiles/wasm_clapack.mk >> kaldi.mk
+  echo "Warning (CLAPACK): this part of the configure process is not properly tested and may not work."
+  echo "Successfully configured for WebAssembly with CLAPACK libs from $CLAPACKROOT"
 
 elif [ "`uname`" == "Darwin" ]; then
   # Check for Darwin first, because we later call uname -o (for Cygwin)

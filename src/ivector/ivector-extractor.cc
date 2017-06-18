@@ -190,16 +190,10 @@ void IvectorExtractor::ComputeDerivedVars() {
   U_.Resize(NumGauss(), IvectorDim() * (IvectorDim() + 1) / 2);
   Sigma_inv_M_.resize(NumGauss());
 
-  // Note, we could have used RunMultiThreaded for this and similar tasks we
-  // have here, but we found that we don't get as complete CPU utilization as we
-  // could because some tasks finish before others.
-  {
-    TaskSequencerConfig sequencer_opts;
-    sequencer_opts.num_threads = g_num_threads;
-    TaskSequencer<IvectorExtractorComputeDerivedVarsClass> sequencer(
-        sequencer_opts);
-    for (int32 i = 0; i < NumGauss(); i++)
-      sequencer.Run(new IvectorExtractorComputeDerivedVarsClass(this, i));
+  for (int32 i = 0; i < NumGauss(); i++) {
+    IvectorExtractorComputeDerivedVarsClass *t = new IvectorExtractorComputeDerivedVarsClass(this, i);
+    (*t)();
+    delete t;
   }
   KALDI_LOG << "Done.";
 }

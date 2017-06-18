@@ -19,16 +19,15 @@ ifeq ($(KALDI_FLAVOR), dynamic)
   endif
 else
   ifdef LIBNAME
-    LIBFILE = $(LIBNAME).a
+    LIBFILE = $(LIBNAME).bc
   endif
-  XDEPENDS = $(ADDLIBS)
+  XDEPENDS = $(foreach dep,$(ADDLIBS), $(dir $(dep))$(notdir $(basename $(dep))).bc)
 endif
 
-all: $(LIBFILE) $(BINFILES)
+all: $(LIBFILE) #$(BINFILES)
 
 $(LIBFILE): $(OBJFILES)
-	$(AR) -cru $(LIBNAME).a $(OBJFILES)
-	$(RANLIB) $(LIBNAME).a
+	$(CC) -o $(LIBNAME).bc $(OBJFILES)
 ifeq ($(KALDI_FLAVOR), dynamic)
 ifeq ($(shell uname), Darwin)
 	$(CXX) -dynamiclib -o $@ -install_name @rpath/$@ $(LDFLAGS) $(OBJFILES) $(LDLIBS)
@@ -53,6 +52,7 @@ else
 $(BINFILES): $(LIBFILE) $(XDEPENDS)
 endif
 
+
 # Rule below would expand to, e.g.:
 # ../base/kaldi-base.a:
 # 	make -c ../base kaldi-base.a
@@ -60,11 +60,14 @@ endif
 %.a:
 	$(MAKE) -C ${@D} ${@F}
 
+%.bc:
+	$(MAKE) -C ${@D} ${@F}
+
 %.so:
 	$(MAKE) -C ${@D} ${@F}
 
 clean:
-	-rm -f *.o *.a *.so $(TESTFILES) $(BINFILES) $(TESTOUTPUTS) tmp* *.tmp *.testlog
+	-rm -f *.o *.a *.bc *.so $(TESTFILES) $(BINFILES) $(TESTOUTPUTS) tmp* *.tmp *.testlog
 
 distclean: clean
 	-rm -f .depend.mk

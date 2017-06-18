@@ -133,3 +133,13 @@ GSYMS
 /tools/sequitur-g2p/
 
 /kaldiwin_vs*
+*.bc
+*.tgz
+*.gz
+*.swp
+*.js
+*.html
+*.wasm
+*.wast
+*.map
+*.data
