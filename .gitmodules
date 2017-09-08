@@ -1,0 +1,9 @@
+[submodule "kaldi-wa"]
+	path = kaldi-wa
+	url = ./kaldi-wa
+[submodule "AlexaZork"]
+	path = AlexaZork
+	url = ./AlexaZork/
+[submodule "zork"]
+	path = zork
+	url = ./zork

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Zork!</title>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="node_modules/jquery.terminal/css/jquery.terminal.min.css" />
+</head>
+
+<body>
+<style>
+		#mic {
+			display: block;
+			width: 80px;
+			height: 80px;
+			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDJBMywzIDAgMCwxIDE1LDVWMTFBMywzIDAgMCwxIDEyLDE0QTMsMyAwIDAsMSA5LDExVjVBMywzIDAgMCwxIDEyLDJNMTksMTFDMTksMTQuNTMgMTYuMzksMTcuNDQgMTMsMTcuOTNWMjFIMTFWMTcuOTNDNy42MSwxNy40NCA1LDE0LjUzIDUsMTFIN0E1LDUgMCAwLDAgMTIsMTZBNSw1IDAgMCwwIDE3LDExSDE5WiIgLz48L3N2Zz4NCg==");
+			background-size: 70%;
+			background-color: #2962FF;
+			background-position: 50% 50%;
+			background-repeat: no-repeat;
+			-moz-border-radius: 50%;
+			-webkit-border-radius: 50%;
+			border-radius: 50%;
+		}
+
+		#mic.active {
+			background-color: #aaa;
+		}
+
+		#mic-cont {
+			z-index: 1;
+			position: fixed;
+			right: 70px;
+			bottom: 70px;
+		}
+
+		#content {
+			max-width: 45em;
+			margin: 0 auto;
+			font-size: 1.3em;
+		}
+
+		body {
+			margin: 0;
+		}
+
+		.terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
+		    font-size: 20px;
+		    line-height: 24px;
+		}
+
+		#terminal {
+			height: 100vh;
+		}
+
+		a {
+			text-decoration: none;
+		}
+	</style>
+	<div id="mic-cont">
+		<a class="active" href="#" id="mic"></a>
+	</div>
+    <div id="terminal"></div>
+    <script>
+    var terminal = $('#terminal').terminal(function(command) {
+        command = command.substring(0, 77).trim().toUpperCase();
+        console.log('command (' + command.length + '): ' + command);
+        Module.stringToAscii(command, Module._get_input_buffer());
+        Module.last_game_state = Module._game_(Module.last_game_state);
+    }, {
+		prompt: '>',
+		scrollOnEcho: true
+	});
+	terminal.clear();
+
+    Module = {
+        print: function(str) {
+            terminal.echo(str);
+        },
+		/*
+        printErr: function(str) {
+            terminal.echo(str);
+        },
+		*/
+        onRuntimeInitialized: function() {
+            this._init_();
+            this.last_game_state = Module._game_(0);
+        }
+    };
+
+    </script>
+    <script src="zork.js"></script>
+    <script src="kaldi.js"></script>
+</body>
+</html>

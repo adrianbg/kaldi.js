@@ -1,0 +1,39 @@
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package kaldi;
+
+message ClientMessage {
+	int32 transaction = 1;
+	Init init = 2;
+	Start start = 3;
+	Audio audio = 4;
+	Cancel cancel = 5;
+}
+
+message ServerMessage {
+	int32 transaction = 1;
+	string error = 2;
+	AsrResult asr_result = 3;
+}
+
+message Init {
+	repeated string args = 1;
+	float sample_frequency = 2;
+}
+
+message Start {}
+
+message Audio {
+	repeated float audio = 1 [packed = true];
+}
+
+message Cancel {}
+
+message AsrResult {
+	string transcript = 1;
+	string adaptation_state = 2;
+	double final_relative_cost = 3;
+	bool endpoint_detected = 4;
+	bool last = 5;
+}
