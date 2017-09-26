@@ -63,35 +63,71 @@
 		<a class="active" href="#" id="mic"></a>
 	</div>
     <div id="terminal"></div>
+
     <script>
-    var terminal = $('#terminal').terminal(function(command) {
-        command = command.substring(0, 77).trim().toUpperCase();
-        console.log('command (' + command.length + '): ' + command);
-        Module.stringToAscii(command, Module._get_input_buffer());
-        Module.last_game_state = Module._game_(Module.last_game_state);
-    }, {
-		prompt: '>',
-		scrollOnEcho: true
-	});
-	terminal.clear();
+	    var terminal = $('#terminal').terminal(function(command) {
+	        command = command.substring(0, 77).trim().toUpperCase();
+	        console.log('command (' + command.length + '): ' + command);
+	        Module.stringToAscii(command, Module._get_input_buffer());
+	        Module.last_game_state = Module._game_(Module.last_game_state);
+	    }, {
+			prompt: '>',
+			scrollOnEcho: true
+		});
+		terminal.clear();
 
-    Module = {
-        print: function(str) {
-            terminal.echo(str);
-        },
-		/*
-        printErr: function(str) {
-            terminal.echo(str);
-        },
-		*/
-        onRuntimeInitialized: function() {
-            this._init_();
-            this.last_game_state = Module._game_(0);
-        }
-    };
-
+	    Module = {
+	        print: function(str) {
+	            terminal.echo(str);
+	        },
+	        onRuntimeInitialized: function() {
+	            this._init_();
+	            this.last_game_state = Module._game_(0);
+	        }
+	    };
     </script>
-    <script src="zork.js"></script>
+    <script src="zork/zork.js"></script>
     <script src="kaldi.js"></script>
+	<script>
+        var kaldi = new Kaldi({
+			'worker-path': 'zork-worker.js',
+			
+			'mfcc-config': 'acoustic_model/mfcc.conf',
+            'acoustic-model': 'acoustic_model/final.mdl',
+            'frame-subsampling-factor': 3,
+            'acoustic-scale': 1,
+            'beam': 8,
+            'lattice-beam': 8,
+            'word-symbol-table': 'zork_graph/words.txt',
+            'decode-graph': 'zork_graph/HCLG.fst',
+            
+            'endpoint.rule3.max-relative-cost': 8,
+            'endpoint.silence-phones': '1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20',
+        });
+
+        $('#mic').click(function(e) {
+            e.preventDefault();
+            kaldi.toggle();
+        });
+
+		kaldi.onactive = function() {
+			console.log('really active');
+            $('#mic').addClass('active');
+		};
+		kaldi.oninactive = function() {
+			console.log('really inactive');
+            $('#mic').removeClass('active');
+		};
+		kaldi.oncommand = function(command) {
+            terminal.exec(command);
+		};
+		kaldi.setonerror(function(error) {
+			console.log('error: ' + error);
+	        $('#mic').addClass('active');
+			$('#mic').off('off');
+		});
+
+        $('#mic').removeClass('active');
+	</script>
 </body>
 </html>

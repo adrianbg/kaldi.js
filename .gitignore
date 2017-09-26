@@ -4,3 +4,5 @@
 *.wasm
 *.wast
 *.map
+json.hpp
+gsl*

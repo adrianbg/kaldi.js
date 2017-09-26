@@ -7,3 +7,6 @@
 [submodule "zork"]
 	path = zork
 	url = ./zork
+[submodule "CLAPACK-WA"]
+	path = CLAPACK-WA
+	url = ./CLAPACK-WA
