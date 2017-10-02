@@ -344,10 +344,7 @@ void KaldiJsHandleAudio() {
             asr->chunk_valid += copy_len;
 
             if (asr->chunk_valid == asr->chunk.Dim()) {
-                KALDI_LOG << "before decode";
-                // we have a whole chunk. decode.
                 asr->DecodeChunk();
-                KALDI_LOG << "after decode";
             }
         }
 

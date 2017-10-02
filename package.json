@@ -1,0 +1,19 @@
+{
+  "name": "kaldi.js",
+  "version": "1.0.0",
+  "description": "In-browser speech recognition using WebAssembly",
+  "main": "kaldi.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianbg/kaldi.js.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "jquery.terminal": "^1.8.0"
+  }
+}

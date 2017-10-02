@@ -1,12 +1,12 @@
 [submodule "kaldi-wa"]
 	path = kaldi-wa
-	url = ./kaldi-wa
+	url = https://github.com/adrianbg/kaldi-wa.git
 [submodule "AlexaZork"]
 	path = AlexaZork
-	url = ./AlexaZork/
+	url = https://github.com/mathom/AlexaZork.git
 [submodule "zork"]
 	path = zork
-	url = ./zork
+	url = https://github.com/adrianbg/zork.git
 [submodule "CLAPACK-WA"]
 	path = CLAPACK-WA
-	url = ./CLAPACK-WA
+	url = https://github.com/adrianbg/CLAPACK-WA.git

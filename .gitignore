@@ -6,3 +6,4 @@
 *.map
 json.hpp
 gsl*
+node_modules
