@@ -105,17 +105,17 @@ var kaldi = new Kaldi({
     'endpoint.silence-phones': '1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20',
 });
 
-$('#mic').click(function(e) {
-    e.preventDefault();
-    kaldi.toggle();
+kaldi.setonready(function() {
+	$('#mic').removeClass('active');
+	$('#mic').click(function(e) {
+	    e.preventDefault();
+	    kaldi.toggle();
+	});
 });
-
 kaldi.onactive = function() {
-    console.log('really active');
     $('#mic').addClass('active');
 };
 kaldi.oninactive = function() {
-    console.log('really inactive');
     $('#mic').removeClass('active');
 };
 kaldi.oncommand = function(command) {
@@ -126,8 +126,6 @@ kaldi.setonerror(function(error) {
     $('#mic').addClass('active');
     $('#mic').off('off');
 });
-
-$('#mic').removeClass('active');
 </script>
 </body>
 </html>

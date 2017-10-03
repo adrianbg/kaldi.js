@@ -7,9 +7,11 @@
         this.worker_path = this.config['worker-path'];
         delete this.config['worker-path'];
 
+        this.ready = false;
         this.error = null;
         this.active = false;
 
+        this.onready = null;
         this.onactive = null;
         this.oninactive = null;
         this.oncommand = null;
@@ -47,6 +49,10 @@
                 that.config['input-sample-frequency'] = that._audioContext.sampleRate;
             
                 that._worker.postMessage({ init: that.config });
+                if (that.onready) {
+                    that.onready();
+                }
+                that.ready = true;
             } else {
                 that.deactivate();
                 if (e.data.transcript) {
@@ -54,6 +60,13 @@
                 }
             }
         };
+
+        this.setonready = function(readyHandler) {
+            this.onready = readyHandler;
+            if (this.ready && readyHandler) {
+                readyHandler();
+            }
+        }
 
         this.setonerror = function(errorHandler) {
             this.onerror = errorHandler;
@@ -80,6 +93,9 @@
         };
 
         this.toggle = function() {
+            if (!this.ready) {
+                return;
+            }
             if (this.active) {
                 this.deactivate();
             } else {
@@ -88,8 +104,7 @@
         };
 
         this.activate = function() {
-            console.log('activate. active: ' + this.active);
-            if (this.error || this.active) {
+            if (!this.ready || this.error || this.active) {
                 return;
             }
 
@@ -127,8 +142,7 @@
         };
 
         this.deactivate = function() {
-            console.log('deactivate. active: ' + this.active);
-            if (!this.active) {
+            if (!this.ready || !this.active) {
                 return;
             }
 
