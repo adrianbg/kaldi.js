@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Zork!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Zork!</title>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/jquery.terminal/js/jquery.terminal.min.js"></script>
     <link rel="stylesheet" type="text/css" href="node_modules/jquery.terminal/css/jquery.terminal.min.css" />
@@ -11,123 +11,123 @@
 
 <body>
 <style>
-		#mic {
-			display: block;
-			width: 80px;
-			height: 80px;
-			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDJBMywzIDAgMCwxIDE1LDVWMTFBMywzIDAgMCwxIDEyLDE0QTMsMyAwIDAsMSA5LDExVjVBMywzIDAgMCwxIDEyLDJNMTksMTFDMTksMTQuNTMgMTYuMzksMTcuNDQgMTMsMTcuOTNWMjFIMTFWMTcuOTNDNy42MSwxNy40NCA1LDE0LjUzIDUsMTFIN0E1LDUgMCAwLDAgMTIsMTZBNSw1IDAgMCwwIDE3LDExSDE5WiIgLz48L3N2Zz4NCg==");
-			background-size: 70%;
-			background-color: #2962FF;
-			background-position: 50% 50%;
-			background-repeat: no-repeat;
-			-moz-border-radius: 50%;
-			-webkit-border-radius: 50%;
-			border-radius: 50%;
-		}
+#mic {
+    display: block;
+    width: 80px;
+    height: 80px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDJBMywzIDAgMCwxIDE1LDVWMTFBMywzIDAgMCwxIDEyLDE0QTMsMyAwIDAsMSA5LDExVjVBMywzIDAgMCwxIDEyLDJNMTksMTFDMTksMTQuNTMgMTYuMzksMTcuNDQgMTMsMTcuOTNWMjFIMTFWMTcuOTNDNy42MSwxNy40NCA1LDE0LjUzIDUsMTFIN0E1LDUgMCAwLDAgMTIsMTZBNSw1IDAgMCwwIDE3LDExSDE5WiIgLz48L3N2Zz4NCg==");
+    background-size: 70%;
+    background-color: #2962FF;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
 
-		#mic.active {
-			background-color: #aaa;
-		}
+#mic.active {
+    background-color: #aaa;
+}
 
-		#mic-cont {
-			z-index: 1;
-			position: fixed;
-			right: 70px;
-			bottom: 70px;
-		}
+#mic-cont {
+    z-index: 1;
+    position: fixed;
+    right: 70px;
+    bottom: 70px;
+}
 
-		#content {
-			max-width: 45em;
-			margin: 0 auto;
-			font-size: 1.3em;
-		}
+#content {
+    max-width: 45em;
+    margin: 0 auto;
+    font-size: 1.3em;
+}
 
-		body {
-			margin: 0;
-		}
+body {
+    margin: 0;
+}
 
-		.terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
-		    font-size: 20px;
-		    line-height: 24px;
-		}
+.terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
+    font-size: 20px;
+    line-height: 24px;
+}
 
-		#terminal {
-			height: 100vh;
-		}
+#terminal {
+    height: 100vh;
+}
 
-		a {
-			text-decoration: none;
-		}
-	</style>
-	<div id="mic-cont">
-		<a class="active" href="#" id="mic"></a>
-	</div>
-    <div id="terminal"></div>
+a {
+    text-decoration: none;
+}
+</style>
+<div id="mic-cont">
+    <a class="active" href="#" id="mic"></a>
+</div>
+<div id="terminal"></div>
 
-    <script>
-	    var terminal = $('#terminal').terminal(function(command) {
-	        command = command.substring(0, 77).trim().toUpperCase();
-	        console.log('command (' + command.length + '): ' + command);
-	        Module.stringToAscii(command, Module._get_input_buffer());
-	        Module.last_game_state = Module._game_(Module.last_game_state);
-	    }, {
-			prompt: '>',
-			scrollOnEcho: true
-		});
-		terminal.clear();
+<script>
+var terminal = $('#terminal').terminal(function(command) {
+    command = command.substring(0, 77).trim().toUpperCase();
+    console.log('command (' + command.length + '): ' + command);
+    Module.stringToAscii(command, Module._get_input_buffer());
+    Module.last_game_state = Module._game_(Module.last_game_state);
+}, {
+    prompt: '>',
+    scrollOnEcho: true
+});
+terminal.clear();
 
-	    Module = {
-	        print: function(str) {
-	            terminal.echo(str);
-	        },
-	        onRuntimeInitialized: function() {
-	            this._init_();
-	            this.last_game_state = Module._game_(0);
-	        }
-	    };
-    </script>
-    <script src="zork/zork.js"></script>
-    <script src="kaldi.js"></script>
-	<script>
-        var kaldi = new Kaldi({
-			'worker-path': 'zork-worker.js',
-			
-			'mfcc-config': 'acoustic_model/mfcc.conf',
-            'acoustic-model': 'acoustic_model/final.mdl',
-            'frame-subsampling-factor': 3,
-            'acoustic-scale': 1,
-            'beam': 8,
-            'lattice-beam': 8,
-            'word-symbol-table': 'zork_graph/words.txt',
-            'decode-graph': 'zork_graph/HCLG.fst',
-            
-            'endpoint.rule3.max-relative-cost': 8,
-            'endpoint.silence-phones': '1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20',
-        });
+Module = {
+    print: function(str) {
+        terminal.echo(str);
+    },
+    onRuntimeInitialized: function() {
+        this._init_();
+        this.last_game_state = Module._game_(0);
+    }
+};
+</script>
+<script src="zork/zork.js"></script>
+<script src="kaldi.js"></script>
+<script>
+var kaldi = new Kaldi({
+    'worker-path': 'zork-worker.js',
+    
+    'mfcc-config': 'acoustic_model/mfcc.conf',
+    'acoustic-model': 'acoustic_model/final.mdl',
+    'frame-subsampling-factor': 3,
+    'acoustic-scale': 1,
+    'beam': 8,
+    'lattice-beam': 8,
+    'word-symbol-table': 'zork_graph/words.txt',
+    'decode-graph': 'zork_graph/HCLG.fst',
+    
+    'endpoint.rule3.max-relative-cost': 8,
+    'endpoint.silence-phones': '1:2:3:4:5:6:7:8:9:10:11:12:13:14:15:16:17:18:19:20',
+});
 
-        $('#mic').click(function(e) {
-            e.preventDefault();
-            kaldi.toggle();
-        });
+$('#mic').click(function(e) {
+    e.preventDefault();
+    kaldi.toggle();
+});
 
-		kaldi.onactive = function() {
-			console.log('really active');
-            $('#mic').addClass('active');
-		};
-		kaldi.oninactive = function() {
-			console.log('really inactive');
-            $('#mic').removeClass('active');
-		};
-		kaldi.oncommand = function(command) {
-            terminal.exec(command);
-		};
-		kaldi.setonerror(function(error) {
-			console.log('error: ' + error);
-	        $('#mic').addClass('active');
-			$('#mic').off('off');
-		});
+kaldi.onactive = function() {
+    console.log('really active');
+    $('#mic').addClass('active');
+};
+kaldi.oninactive = function() {
+    console.log('really inactive');
+    $('#mic').removeClass('active');
+};
+kaldi.oncommand = function(command) {
+    terminal.exec(command);
+};
+kaldi.setonerror(function(error) {
+    console.log('error: ' + error);
+    $('#mic').addClass('active');
+    $('#mic').off('off');
+});
 
-        $('#mic').removeClass('active');
-	</script>
+$('#mic').removeClass('active');
+</script>
 </body>
 </html>
