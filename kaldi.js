@@ -54,9 +54,11 @@
                 }
                 that.ready = true;
             } else {
-                that.deactivate();
+                if (e.data.final) {
+                    that.deactivate();
+                }
                 if (e.data.transcript) {
-                    that._handleCommand(e.data.transcript);
+                    that._handleCommand(e.data.transcript, e.data.final);
                 }
             }
         };
@@ -75,8 +77,7 @@
             }
         }
 
-        this._handleCommand = function(transcript) {
-            console.log('handle command: ' + transcript)
+        this._handleCommand = function(transcript, final) {
             var restartIndex = transcript.lastIndexOf('[restart]');
             if (restartIndex != -1) {
                 transcript = transcript.substring(restartIndex + '[restart] '.length);
@@ -85,7 +86,7 @@
             var spaceIndex = transcript.indexOf(' ');
             if (transcript[0] == '[' && spaceIndex !== -1) {
                 if (that.oncommand) {
-                    that.oncommand(transcript.substring(spaceIndex));
+                    that.oncommand(transcript.substring(spaceIndex), final);
                 }
             } else {
                 console.log('invalid command: ' + transcript);
@@ -149,7 +150,7 @@
             this.active = false;
 
             if (this._stream) {
-                this._stream.getAudioTracks().forEach(function (track) {
+                this._stream.getAudioTracks().forEach(function(track) {
                     track.stop();
                 });
                 this._stream = null;

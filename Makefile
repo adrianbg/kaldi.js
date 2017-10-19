@@ -21,7 +21,7 @@ ZORK_GRAPH = $(GRAPH_DIR)/HCLG.fst
 $(ZORK_GRAPH) $(WORDS_TXT): alexa_fst.py
 	./alexa_fst.py AlexaZork zork_lang acoustic_model $(GRAPH_DIR)
 
-zork-worker.js: kaldi-worker.cc $(ZORK_GRAPH) $(WORDS_TXT)
+zork-worker.js: kaldi-worker.cc kaldi-worker-js.js $(ZORK_GRAPH) $(WORDS_TXT)
 	$(CXX) -o zork-worker.js $(LDFLAGS) $(CXXFLAGS) $(LDLIBS) $(XDEPENDS) kaldi-worker.cc \
 		--preload-file acoustic_model/final.mdl \
 		--preload-file acoustic_model/mfcc.conf \

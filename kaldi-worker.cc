@@ -53,7 +53,6 @@ extern "C" {
 string GetBestTranscript(const fst::SymbolTable *word_syms,
                     const LatticeFasterOnlineDecoder &decoder) {
     if (!decoder.NumFramesDecoded()) {
-        KALDI_WARN << "No frames decoded.";
         return "";
     }
 
@@ -301,7 +300,6 @@ float* _KalidJsInit(char *commandline) {
 
         asr->audio_in.Resize(in_buffer_size);
         asr->chunk.Resize(chunk_length);
-        KALDI_LOG << "kaldi.js initted";
 
         asr->enabled = true;
         return asr->audio_in.Data();
@@ -325,6 +323,13 @@ void KaldiJsReset() {
     }
 }
 
+void SendMessage(json message) {
+        std::string message_json = message.dump();
+        EM_ASM_({
+            postByteArray($0, $1);
+        }, message_json.c_str(), message_json.length());
+}
+
 void KaldiJsHandleAudio() {
     try {
         if (!asr->enabled) {
@@ -345,23 +350,29 @@ void KaldiJsHandleAudio() {
 
             if (asr->chunk_valid == asr->chunk.Dim()) {
                 asr->DecodeChunk();
+                json message;
+                message["transcript"] = GetBestTranscript(asr->word_syms, asr->decoder->Decoder());
+                message["final"] = false;
+                SendMessage(message);
             }
         }
 
         if (asr->endpoint_detected) {
-            std::string message;
+            json message;
+            message["final"] = true;
+            
             if (asr->decoder->Decoder().FinalRelativeCost() <= 8) {
-                message = GetBestTranscript(asr->word_syms, asr->decoder->Decoder());
-            } else {
-                message = "";
+                message["transcript"] = GetBestTranscript(asr->word_syms, asr->decoder->Decoder());
             }
 
-            EM_ASM_({
-                postByteArray($0, $1);
-            }, message.c_str(), message.length());
+            SendMessage(message);
+            
             asr->enabled = false;  // stop accepting audio. we start again on reset
         }
     } catch (const std::exception &e) {
         KALDI_LOG << "exception: " << e.what();
+        json message;
+        message["error"] = e.what();
+        SendMessage(message);
     }
 }

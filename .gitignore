@@ -1,5 +1,4 @@
 *.swp
-*.pb.*
 *.data
 *.wasm
 *.wast
@@ -7,3 +6,4 @@
 json.hpp
 gsl*
 node_modules
+zork-worker.js

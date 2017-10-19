@@ -36,19 +36,13 @@
     bottom: 70px;
 }
 
-#content {
-    max-width: 45em;
-    margin: 0 auto;
-    font-size: 1.3em;
-}
-
 body {
     margin: 0;
 }
 
 .terminal, .cmd, .terminal .terminal-output div div, .cmd .prompt {
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 17px;
+    line-height: 20px;
 }
 
 #terminal {
@@ -59,22 +53,31 @@ a {
     text-decoration: none;
 }
 </style>
+<div id="terminal"></div>
+<!-- mic comes after terminal so it tabs next to the terminal's input -->
 <div id="mic-cont">
     <a class="active" href="#" id="mic"></a>
 </div>
-<div id="terminal"></div>
 
 <script>
 var terminal = $('#terminal').terminal(function(command) {
     command = command.substring(0, 77).trim().toUpperCase();
-    console.log('command (' + command.length + '): ' + command);
     Module.stringToAscii(command, Module._get_input_buffer());
     Module.last_game_state = Module._game_(Module.last_game_state);
 }, {
     prompt: '>',
-    scrollOnEcho: true
+    scrollOnEcho: true,
+    greetings: 'This is a speech version of Zork (aka Colossal Cave, aka Dungeon). You can click on the microphone and say simple things like\n\nopen mailbox\ntake leaflet\ngo west\n\n',
+    keydown: function(event, terminal) {
+        if (event.originalEvent.code === 'Tab') {
+            console.log('focussing');
+            $('#mic').focus();
+            return false;
+        } else {
+            return true;
+        }
+    }
 });
-terminal.clear();
 
 Module = {
     print: function(str) {
@@ -86,7 +89,7 @@ Module = {
     }
 };
 </script>
-<script src="zork/zork.js"></script>
+<script src="zork.js"></script>
 <script src="kaldi.js"></script>
 <script>
 var kaldi = new Kaldi({
@@ -118,8 +121,14 @@ kaldi.onactive = function() {
 kaldi.oninactive = function() {
     $('#mic').removeClass('active');
 };
-kaldi.oncommand = function(command) {
-    terminal.exec(command);
+kaldi.oncommand = function(command, final) {
+    console.log('command (' + command.length + ', final=' + final + '): ' + command);
+    if (final) {
+        terminal.exec(command);
+        terminal.set_command('');
+    } else {
+        terminal.set_command(command);
+    }
 };
 kaldi.setonerror(function(error) {
     console.log('error: ' + error);
