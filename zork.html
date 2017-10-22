@@ -11,31 +11,6 @@
 
 <body>
 <style>
-#mic {
-    display: block;
-    width: 80px;
-    height: 80px;
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDJBMywzIDAgMCwxIDE1LDVWMTFBMywzIDAgMCwxIDEyLDE0QTMsMyAwIDAsMSA5LDExVjVBMywzIDAgMCwxIDEyLDJNMTksMTFDMTksMTQuNTMgMTYuMzksMTcuNDQgMTMsMTcuOTNWMjFIMTFWMTcuOTNDNy42MSwxNy40NCA1LDE0LjUzIDUsMTFIN0E1LDUgMCAwLDAgMTIsMTZBNSw1IDAgMCwwIDE3LDExSDE5WiIgLz48L3N2Zz4NCg==");
-    background-size: 70%;
-    background-color: #2962FF;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-}
-
-#mic.active {
-    background-color: #aaa;
-}
-
-#mic-cont {
-    z-index: 1;
-    position: fixed;
-    right: 70px;
-    bottom: 70px;
-}
-
 body {
     margin: 0;
 }
@@ -52,11 +27,75 @@ body {
 a {
     text-decoration: none;
 }
+
+#mic-container {
+    z-index: 1;
+    position: fixed;
+    right: 70px;
+    bottom: 70px;
+}
+
+.double-bounce1, .double-bounce2 {
+    background-color: #666;
+    opacity: 0.6;
+    -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+    animation: sk-bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+}
+
+.loaded #mic, .double-bounce1, .double-bounce2 {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    width: 80px;
+    height: 80px;
+}
+
+#mic, .loaded .double-bounce1, .loaded .double-bounce2 {
+    display: none;
+}
+
+.loaded #mic {
+    display: block;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDJBMywzIDAgMCwxIDE1LDVWMTFBMywzIDAgMCwxIDEyLDE0QTMsMyAwIDAsMSA5LDExVjVBMywzIDAgMCwxIDEyLDJNMTksMTFDMTksMTQuNTMgMTYuMzksMTcuNDQgMTMsMTcuOTNWMjFIMTFWMTcuOTNDNy42MSwxNy40NCA1LDE0LjUzIDUsMTFIN0E1LDUgMCAwLDAgMTIsMTZBNSw1IDAgMCwwIDE3LDExSDE5WiIgLz48L3N2Zz4NCg==");
+    background-size: 70%;
+    background-color: #2962FF;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+#mic.active {
+    background-color: #aaa;
+}
+
+@-webkit-keyframes sk-bounce {
+    0%, 100% { -webkit-transform: scale(0.0) }
+    50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bounce {
+    0%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    } 50% {
+        transform: scale(1.0);
+        -webkit-transform: scale(1.0);
+    }
+}
 </style>
 <div id="terminal"></div>
 <!-- mic comes after terminal so it tabs next to the terminal's input -->
-<div id="mic-cont">
-    <a class="active" href="#" id="mic"></a>
+<div id="mic-container">
+    <a id="mic" href="#" title="microphone"></a>
+    <div class="double-bounce1"></div>
+    <div class="double-bounce2"></div>
 </div>
 
 <script>
@@ -67,7 +106,7 @@ var terminal = $('#terminal').terminal(function(command) {
 }, {
     prompt: '>',
     scrollOnEcho: true,
-    greetings: 'This is a speech version of Zork (aka Colossal Cave, aka Dungeon). You can click on the microphone and say simple things like\n\nopen mailbox\ntake leaflet\ngo west\n\n',
+    greetings: 'This is a speech version of the classic game Zork (aka Colossal Cave, aka Dungeon). You can click on the microphone and say simple things like\n\nopen mailbox\ntake leaflet\ngo west\n\nIt only understands words in a small vocabulary. If your command isn\'t working, try rephrasing it.\n\n',
     keydown: function(event, terminal) {
         if (event.originalEvent.code === 'Tab') {
             $('#mic').focus();
@@ -108,7 +147,7 @@ var kaldi = new Kaldi({
 });
 
 kaldi.setonready(function() {
-	$('#mic').removeClass('active');
+	$('#mic-container').addClass('loaded');
 	$('#mic').click(function(e) {
 	    e.preventDefault();
 	    kaldi.toggle();
@@ -130,9 +169,11 @@ kaldi.oncommand = function(command, final) {
     }
 };
 kaldi.setonerror(function(error) {
-    console.log('error: ' + error);
+    terminal.echo('');
+    terminal.error(error);
+    terminal.pause();
     $('#mic').addClass('active');
-    $('#mic').off('off');
+    $('#mic').off('click');
 });
 </script>
 </body>

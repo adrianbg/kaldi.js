@@ -134,7 +134,7 @@
                 },
                 function(e) {
                     that.error = "No live audio input in this browser: " + e;
-                    that.active = false;
+                    that.deactivate();
                     if (that.onerror) {
                         that.onerror(that.error);
                     }
