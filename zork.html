@@ -70,7 +70,6 @@ var terminal = $('#terminal').terminal(function(command) {
     greetings: 'This is a speech version of Zork (aka Colossal Cave, aka Dungeon). You can click on the microphone and say simple things like\n\nopen mailbox\ntake leaflet\ngo west\n\n',
     keydown: function(event, terminal) {
         if (event.originalEvent.code === 'Tab') {
-            console.log('focussing');
             $('#mic').focus();
             return false;
         } else {
