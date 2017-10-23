@@ -4,7 +4,8 @@ This is the [serverless speech recognition Zork demo](https://patter.io/2017/10/
 
 First, [install Emscripten](https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Then do the following:
 
-```git clone --recursive https://github.com/adrianbg/kaldi.js.git
+```
+git clone --recursive https://github.com/adrianbg/kaldi.js.git
 cd kaldi.js
 wget https://github.com/nlohmann/json/releases/download/v2.1.1/json.hpp
 wget http://mirrors.ocf.berkeley.edu/gnu/gsl/gsl-2.4.tar.gz
@@ -27,4 +28,5 @@ cd zork
 emmake make
 cd ..
 emmake make zork
-npm install```
+npm install
+```
