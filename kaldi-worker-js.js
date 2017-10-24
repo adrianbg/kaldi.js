@@ -5,7 +5,7 @@ Module.handleAudio = Module.cwrap('KaldiJsHandleAudio', null, []);
 self.onmessage = function(e) {
     if ('init' in e.data) {
         var audioPtr = Module.init(JSON.stringify(e.data.init));
-        self.audio = new Float32Array(Module.buffer, audioPtr, e.data.init.bufferSize);
+        self.audio = new Float32Array(Module.buffer, audioPtr, e.data.init['input-buffer-size']);
     } else if ('reset' in e.data) {
         Module.reset();
     } else if ('audio' in e.data) {
