@@ -5,5 +5,5 @@
 	path = src/js/zork
 	url = https://github.com/adrianbg/zork.git
 [submodule "CLAPACK-WA"]
-	path = src/js/CLAPACK-WA
+	path = tools/CLAPACK-WA
 	url = https://github.com/adrianbg/CLAPACK-WA.git

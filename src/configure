@@ -1130,7 +1130,13 @@ elif [ "$(basename $CC)" == "emcc" ]; then
   for lib in F2CLIBS/libf2c.bc lapack_WA.bc libcblaswr.bc; do
     CLAPACKLIBS="$CLAPACKLIBS $CLAPACKROOT/$lib"
   done
-  CLAPACKLIBS="$CLAPACKLIBS $GSLROOT/cblas/.libs/libgslcblas.dylib"
+  if [ "`uname`" == "Darwin"  ]; then
+    CLAPACKLIBS="$CLAPACKLIBS $GSLROOT/cblas/.libs/libgslcblas.dylib"
+  elif [ "`uname`" == "Linux" ]; then
+    CLAPACKLIBS="$CLAPACKLIBS $GSLROOT/cblas/.libs/libgslcblas.so"
+  else
+    failure "Emscripten is not supported on this platform."
+  fi
 
   echo "CLAPACKLIBS = $CLAPACKLIBS" >> kaldi.mk
 

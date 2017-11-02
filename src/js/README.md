@@ -6,27 +6,35 @@ First, [install Emscripten](https://kripken.github.io/emscripten-site/docs/getti
 
 ```
 git clone --recursive https://github.com/adrianbg/kaldi.js.git
-cd kaldi.js
-wget https://github.com/nlohmann/json/releases/download/v2.1.1/json.hpp
+
+cd kaldi.js/tools
+extras/check_dependencies.sh
+
+# ... install anything that's missing
+
+emmake make CXXFLAGS=-O3 LDFLAGS=-O3 openfst
+
+cd ../CLAPACK-wa
+emmake make
+
+cd ..
 wget http://mirrors.ocf.berkeley.edu/gnu/gsl/gsl-2.4.tar.gz
 tar xvzf gsl-2.4.tar.gz
 ln -s gsl-2.4 gsl
 cd gsl
 emconfigure ./configure
 emmake make
-cd ..
-cd CLAPACK-wa
-emmake make
-cd ..
-cd kaldi-wa/tools
-emmake make CXXFLAGS=-O3 LDFLAGS=-O3 openfst
+
 cd ../src
-CXXFLAGS=-O3 LDFLAGS=-O3 emconfigure ./configure --static --static-fst=no --clapack-root=../../CLAPACK-WA --gsl-root=../../gsl/
+CXXFLAGS=-O3 LDFLAGS=-O3 emconfigure ./configure --static --static-fst=no --clapack-root=../tools/CLAPACK-WA --gsl-root=../tools/gsl/
+emmake make depend
 emmake make
-cd ../..
-cd zork
+
+cd js/zork
 emmake make
+
 cd ..
+wget https://github.com/nlohmann/json/releases/download/v2.1.1/json.hpp
 emmake make zork
 npm install
 ```

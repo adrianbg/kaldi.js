@@ -131,6 +131,8 @@ GSYMS
 /tools/srilm-1.7.2-beta.tar.gz
 /tools/liblbfgs/
 /tools/sequitur-g2p/
+/tools/gsl
+/tools/gsl-2.4/
 
 /kaldiwin_vs*
 *.bc

@@ -1,19 +1,17 @@
-KS = kaldi-wa/src
+include ../kaldi.mk
 
-include $(KS)/kaldi.mk
+ADDLIBS = ../online2/kaldi-online2.bc ../ivector/kaldi-ivector.bc \
+          ../nnet3/kaldi-nnet3.bc ../chain/kaldi-chain.bc \
+          ../cudamatrix/kaldi-cudamatrix.bc ../decoder/kaldi-decoder.bc \
+          ../lat/kaldi-lat.bc ../fstext/kaldi-fstext.bc ../hmm/kaldi-hmm.bc \
+          ../feat/kaldi-feat.bc ../transform/kaldi-transform.bc \
+          ../gmm/kaldi-gmm.bc ../tree/kaldi-tree.bc ../util/kaldi-util.bc \
+          ../matrix/kaldi-matrix.bc ../base/kaldi-base.bc
 
-ADDLIBS = $(KS)/online2/kaldi-online2.bc $(KS)/ivector/kaldi-ivector.bc \
-          $(KS)/nnet3/kaldi-nnet3.bc $(KS)/chain/kaldi-chain.bc \
-          $(KS)/cudamatrix/kaldi-cudamatrix.bc $(KS)/decoder/kaldi-decoder.bc \
-          $(KS)/lat/kaldi-lat.bc $(KS)/fstext/kaldi-fstext.bc $(KS)/hmm/kaldi-hmm.bc \
-          $(KS)/feat/kaldi-feat.bc $(KS)/transform/kaldi-transform.bc \
-          $(KS)/gmm/kaldi-gmm.bc $(KS)/tree/kaldi-tree.bc $(KS)/util/kaldi-util.bc \
-          $(KS)/matrix/kaldi-matrix.bc $(KS)/base/kaldi-base.bc
-
-CXXFLAGS += -I$(KS) -I. -Ikaldi-wa/tools/CLAPACK
+#CXXFLAGS += -I.
 LDFLAGS += -s WASM=1 -s TOTAL_MEMORY=314572800 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=0 -s DEMANGLE_SUPPORT=1
 
-include kaldi-wa/src/makefiles/default_rules.mk
+include ../makefiles/default_rules.mk
 
 GRAPH_DIR = zork_graph
 WORDS_TXT = $(GRAPH_DIR)/words.txt

@@ -18,16 +18,16 @@
 // See the Apache 2 License for the specific language governing permissions and
 // limitations under the License.
 
-#include "kaldi-wa/src/feat/resample.h"
-#include "kaldi-wa/src/feat/wave-reader.h"
-#include "kaldi-wa/src/fstext/fstext-lib.h"
-#include "kaldi-wa/src/lat/lattice-functions.h"
-#include "kaldi-wa/src/nnet3/nnet-utils.h"
-#include "kaldi-wa/src/online2/online-nnet3-decoding.h"
-#include "kaldi-wa/src/online2/online-nnet2-feature-pipeline.h"
-#include "kaldi-wa/src/online2/onlinebin-util.h"
-#include "kaldi-wa/src/online2/online-timing.h"
-#include "kaldi-wa/src/online2/online-endpoint.h"
+#include "feat/resample.h"
+#include "feat/wave-reader.h"
+#include "fstext/fstext-lib.h"
+#include "lat/lattice-functions.h"
+#include "nnet3/nnet-utils.h"
+#include "online2/online-nnet3-decoding.h"
+#include "online2/online-nnet2-feature-pipeline.h"
+#include "online2/onlinebin-util.h"
+#include "online2/online-timing.h"
+#include "online2/online-endpoint.h"
 
 #include <algorithm>
 #include <sys/types.h>

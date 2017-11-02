@@ -4,6 +4,5 @@
 *.wast
 *.map
 json.hpp
-gsl*
 node_modules
 zork-worker.js
