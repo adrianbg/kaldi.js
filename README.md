@@ -1,5 +1,49 @@
-[![Build Status](https://travis-ci.org/kaldi-asr/kaldi.svg?branch=master)]
-(https://travis-ci.org/kaldi-asr/kaldi)
+# Kaldi.js
+
+This is a version of Kaldi tweaked to build to [WebAssembly](https://webassembly.org/). Check out the [Zork demo](https://patter.io/2017/10/20/serverless-speech-recognition-with-webassembly.html). For the Kaldi speech recognition toolkit, see the [official repository](https://github.com/kaldi-asr/kaldi).
+
+## Build instructions
+
+First, [install Emscripten](https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html). Then do the following:
+
+```
+git clone --recursive https://github.com/adrianbg/kaldi.js.git
+
+cd kaldi.js/tools
+extras/check_dependencies.sh
+
+# ... install anything that's missing
+
+emmake make CXXFLAGS=-O3 LDFLAGS=-O3 openfst
+
+cd ../CLAPACK-wa
+emmake make
+
+cd ..
+wget http://mirrors.ocf.berkeley.edu/gnu/gsl/gsl-2.4.tar.gz
+tar xvzf gsl-2.4.tar.gz
+ln -s gsl-2.4 gsl
+cd gsl
+emconfigure ./configure
+emmake make
+
+cd ../src
+CXXFLAGS=-O3 LDFLAGS=-O3 emconfigure ./configure --static --static-fst=no --clapack-root=../tools/CLAPACK-WA --gsl-root=../tools/gsl/
+emmake make depend
+emmake make
+
+# For the Zork demo:
+
+cd js/zork
+emmake make
+
+cd ..
+wget https://github.com/nlohmann/json/releases/download/v2.1.1/json.hpp
+emmake make zork
+npm install
+```
+
+The original Kaldi README follows.
 
 Kaldi Speech Recognition Toolkit
 ================================
