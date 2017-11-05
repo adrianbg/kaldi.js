@@ -2493,13 +2493,7 @@ void NaturalGradientAffineComponent::Resize(
 void NaturalGradientAffineComponent::Read(std::istream &is, bool binary) {
   ReadUpdatableCommon(is, binary);  // Read the opening tag and learning rate
   ExpectToken(is, binary, "<LinearParams>");
-  CompressedMatrix temp;
-  temp.Read(is, binary);
-  Matrix<BaseFloat> mat(temp.NumRows(), temp.NumCols(), kUndefined);
-  temp.CopyToMat(&mat, kNoTrans);
-  linear_params_.Resize(temp.NumRows(), temp.NumCols());
-  linear_params_.CopyFromMat(mat, kNoTrans);
-  //linear_params_.Read(is, binary);
+  linear_params_.Read(is, binary);
   ExpectToken(is, binary, "<BiasParams>");
   bias_params_.Read(is, binary);
   ExpectToken(is, binary, "<RankIn>");

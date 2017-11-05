@@ -200,6 +200,9 @@ int main() {
     EM_ASM(
         self.importScripts('kaldi-worker-js.js');
     );
+
+    // keep the runtime alive so printf etc. continue working
+    emscripten_exit_with_live_runtime();
     return 0;
 }
 

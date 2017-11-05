@@ -32,8 +32,6 @@
 #include <chrono>
 #include <ctime>
 
-#include <emscripten.h>
-
 #include "base/kaldi-common.h"
 #include "base/kaldi-error.h"
 #include "base/version.h"
@@ -103,7 +101,7 @@ static std::string Demangle(std::string trace_name) {
 }
 
 
-std::string KaldiGetStackTrace() {
+static std::string KaldiGetStackTrace() {
   std::string ans;
 #ifdef HAVE_EXECINFO_H
 #define KALDI_MAX_TRACE_SIZE 50
@@ -162,12 +160,14 @@ MessageLogger::~MessageLogger() KALDI_NOEXCEPT(false) {
   MessageLogger::HandleMessage(envelope_, str.c_str());
 }
 
+
 //high precision time in seconds since epoch
 static double getTimeSinceEpoch(std::chrono::high_resolution_clock::time_point* t = nullptr)
 {
     using Clock = std::chrono::high_resolution_clock;
     return std::chrono::duration<double>((t != nullptr ? *t : Clock::now() ).time_since_epoch()).count();
 }
+
 
 void MessageLogger::HandleMessage(const LogMessageEnvelope &envelope,
                                   const char *message) {
@@ -206,15 +206,11 @@ void MessageLogger::HandleMessage(const LogMessageEnvelope &envelope,
     // Printing the message,
     if (envelope.severity >= LogMessageEnvelope::kWarning) {
       // VLOG, LOG, WARNING:
-      emscripten_log(0, "%s %s\n", header.str().c_str(), message);
+      fprintf(stderr, "%s %s\n", header.str().c_str(), message);
     } else {
       // ERROR, ASSERT_FAILED (print with stack-trace):
-      emscripten_log(0, "%s %s\n", header.str().c_str(), message);
-      std::stringstream ss(KaldiGetStackTrace());
-      std::string to;
-      while(std::getline(ss, to, '\n')){
-        emscripten_log(0, "%s\n", to.c_str());
-      }
+      fprintf(stderr, "%s %s\n\n%s\n", header.str().c_str(), message,
+              KaldiGetStackTrace().c_str());
     }
   }
 
@@ -222,7 +218,6 @@ void MessageLogger::HandleMessage(const LogMessageEnvelope &envelope,
   switch (envelope.severity) {
     case LogMessageEnvelope::kAssertFailed:
       throw std::runtime_error(""); // ASSERT_FAILED,
-      break;
     case LogMessageEnvelope::kError:
       if (!std::uncaught_exception()) {
         // throw exception with empty message,

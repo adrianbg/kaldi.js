@@ -1,6 +1,10 @@
 
 SHELL := /bin/bash
 
+ifeq ($(notdir ${CC}), emcc)
+  IS_EMSCRIPTEN = true
+endif
+
 ifeq ($(KALDI_FLAVOR), dynamic)
   ifeq ($(shell uname), Darwin)
     ifdef LIBNAME
@@ -17,28 +21,43 @@ ifeq ($(KALDI_FLAVOR), dynamic)
   else  # Platform not supported
     $(error Dynamic libraries not supported on this platform. Run configure with --static flag.)
   endif
-else
+  XDEPENDS =
+else ifdef IS_EMSCRIPTEN
   ifdef LIBNAME
     LIBFILE = $(LIBNAME).bc
   endif
   XDEPENDS = $(foreach dep,$(ADDLIBS), $(dir $(dep))$(notdir $(basename $(dep))).bc)
+else
+   ifdef LIBNAME
+    LIBFILE = $(LIBNAME).a
+   endif
+  XDEPENDS = $(ADDLIBS)
 endif
 
-all: $(LIBFILE) #$(BINFILES)
+ifdef IS_EMSCRIPTEN
+all: $(LIBFILE)
+else
+all: $(LIBFILE) $(BINFILES)
+endif
 
 $(LIBFILE): $(OBJFILES)
-	$(CC) -o $(LIBNAME).bc $(OBJFILES)
-ifeq ($(KALDI_FLAVOR), dynamic)
-ifeq ($(shell uname), Darwin)
-	$(CXX) -dynamiclib -o $@ -install_name @rpath/$@ $(LDFLAGS) $(OBJFILES) $(LDLIBS)
-	rm -f $(KALDILIBDIR)/$@; ln -s $(shell pwd)/$@ $(KALDILIBDIR)/$@
-else ifeq ($(shell uname), Linux)
-	# Building shared library from static (static was compiled with -fPIC)
-	$(CXX) -shared -o $@ -Wl,--no-undefined -Wl,--as-needed  -Wl,-soname=$@,--whole-archive $(LIBNAME).a -Wl,--no-whole-archive $(LDFLAGS) $(LDLIBS)
-	rm -f $(KALDILIBDIR)/$@; ln -s $(shell pwd)/$@ $(KALDILIBDIR)/$@
-else  # Platform not supported
-	$(error Dynamic libraries not supported on this platform. Run configure with --static flag.)
+ifndef IS_EMSCRIPTEN
+	$(AR) -cru $(LIBNAME).a $(OBJFILES)
+	$(RANLIB) $(LIBNAME).a
+else
+	$(CXX) -o $(LIBNAME).bc $(OBJFILES)
 endif
+ifeq ($(KALDI_FLAVOR), dynamic)
+  ifeq ($(shell uname), Darwin)
+	$(CXX) -dynamiclib -o $@ -install_name @rpath/$@ $(LDFLAGS) $(OBJFILES) $(LDLIBS)
+	ln -sf $(shell pwd)/$@ $(KALDILIBDIR)/$@
+  else ifeq ($(shell uname), Linux)
+        # Building shared library from static (static was compiled with -fPIC)
+	$(CXX) -shared -o $@ -Wl,--no-undefined -Wl,--as-needed  -Wl,-soname=$@,--whole-archive $(LIBNAME).a -Wl,--no-whole-archive $(LDFLAGS) $(LDLIBS)
+	ln -sf $(shell pwd)/$@ $(KALDILIBDIR)/$@
+  else  # Platform not supported
+	$(error Dynamic libraries not supported on this platform. Run configure with --static flag.)
+  endif
 endif
 
 # By default (GNU) make uses the C compiler $(CC) for linking object files even
@@ -50,13 +69,18 @@ ifeq ($(KALDI_FLAVOR), dynamic)
 $(BINFILES): $(LIBFILE)
 else
 $(BINFILES): $(LIBFILE) $(XDEPENDS)
-endif
 
+# When building under CI, CI_NOLINKBINARIES is set to skip linking of binaries.
+ifdef CI_NOLINKBINARIES
+$(BINFILES): %: %.o
+       touch $@
+endif
+endif
 
 # Rule below would expand to, e.g.:
 # ../base/kaldi-base.a:
-# 	make -c ../base kaldi-base.a
-# -c option to make is same as changing directory.
+# 	make -C ../base kaldi-base.a
+# -C option to make is same as changing directory.
 %.a:
 	$(MAKE) -C ${@D} ${@F}
 
